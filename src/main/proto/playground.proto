@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package playground.v1;
+
+option java_multiple_files = true;
+option java_package = "com.playground.grpc";
+
+// Unary RPCs: one request, one response.
+service Calculator {
+  rpc Add(BinaryOperation) returns (CalcResult);
+  // Fails with INVALID_ARGUMENT when the divisor is zero.
+  rpc Divide(BinaryOperation) returns (CalcResult);
+}
+
+// The three streaming call types.
+service Streams {
+  // Server streaming: one request, many responses.
+  rpc Primes(PrimesRequest) returns (stream Prime);
+
+  // Client streaming: many requests, one response.
+  rpc Sum(stream Number) returns (SumResult);
+
+  // Bidirectional streaming: an average is sent back for every number received.
+  rpc RunningAverage(stream Number) returns (stream Average);
+}
+
+message BinaryOperation {
+  double left = 1;
+  double right = 2;
+}
+
+message CalcResult {
+  double value = 1;
+}
+
+message PrimesRequest {
+  // Stream every prime up to and including this limit (max 1,000,000).
+  int32 limit = 1;
+}
+
+message Prime { 
+  int32 value = 1;
+}
+
+message Number {
+  double value = 1;
+}
+
+message SumResult {
+  int32 count = 1;
+  double total = 2;
+}
+
+message Average {
+  int32 count = 1;
+  double average = 2;
+}
